@@ -1,0 +1,20 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using IoTControlPanel.Models;
+@model IEnumerable<test>;
+<table class="table-bordered">
+    <tr>
+        <th>GUID</th>
+        <th>溫度</th>
+        <th>濕度</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.GUID</td>
+            <td>@item.TEMP</td>
+            <td>@item.HUMI</td>
+        </tr>
+    }
+</table>
