@@ -15,11 +15,11 @@
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "TempLog",
+         "Name": "LogLightChange",
          "ObjectType": 0
       },
       {
-         "Name": "TempLog2",
+         "Name": "TempLog",
          "ObjectType": 0
       },
       {

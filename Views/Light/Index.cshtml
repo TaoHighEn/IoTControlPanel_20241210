@@ -1,0 +1,29 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@using IoTControlPanel.Models;
+@model LogLightChange;
+<h2>
+	機台當前狀態：
+	@if (Model.LightNum == 1)
+	{
+		<p>正常運作中</p>
+	}
+	else if (@Model.LightNum == 2)
+	{
+		<p>閒置</p>
+	}
+	else
+	{
+		<p>停機</p>
+	}
+
+</h2>
+<div>
+	<h3>選擇狀態變更列表</h3>
+	<a href="http://192.168.1.109/led?light=1">Run</a>
+	<a href="http://192.168.1.109/led?light=2">idle</a>
+	<a href="http://192.168.1.109/led?light=3">down</a>
+</div>

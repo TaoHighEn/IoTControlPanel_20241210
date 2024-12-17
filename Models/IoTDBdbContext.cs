@@ -17,29 +17,28 @@ public partial class IoTDBdbContext : DbContext
     {
     }
 
-    public virtual DbSet<TempLog> TempLog { get; set; }
+    public virtual DbSet<LogLightChange> LogLightChange { get; set; }
 
-    public virtual DbSet<TempLog2> TempLog2 { get; set; }
+    public virtual DbSet<TempLog> TempLog { get; set; }
 
     public virtual DbSet<test> test { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlite("Data Source=D:\\IoTMVC\\IoTDB.db");
+        => optionsBuilder.UseSqlite("Data Source=C:\\Users\\dev\\Desktop\\IoTControlPanel_20241210\\IoTDB.db");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TempLog>(entity =>
+        modelBuilder.Entity<LogLightChange>(entity =>
         {
             entity.HasKey(e => e.GUID);
 
-            entity.Property(e => e.GUID).HasColumnType("TEXT (36)");
-            entity.Property(e => e.HUMI).HasColumnType("TEXT (10)");
-            entity.Property(e => e.TEMP).HasColumnType("TEXT (10)");
-            entity.Property(e => e.Time).HasColumnType("TEXT (30)");
+            entity.Property(e => e.GUID).HasColumnType("TEXT(36)");
+            entity.Property(e => e.SensorIP).HasColumnType("TEXT(16)");
+            entity.Property(e => e.UpdateTime).HasColumnType("TEXT(20)");
         });
 
-        modelBuilder.Entity<TempLog2>(entity =>
+        modelBuilder.Entity<TempLog>(entity =>
         {
             entity.HasKey(e => e.GUID);
 
