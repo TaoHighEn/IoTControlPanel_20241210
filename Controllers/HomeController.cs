@@ -30,6 +30,40 @@ namespace IoTControlPanel.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        public string InsertData()
+        {
+            using (IoTDBdbContext context = new IoTDBdbContext())
+            {
+                var data = new TempLog()
+                {
+                    GUID = Guid.NewGuid().ToString(),
+                    Time = DateTime.Now.ToString(),
+                    TEMP = "123456",
+                    HUMI = "444444"
+                };
+                context.TempLog.Add(data);
+                context.SaveChanges();
+            }
+            return "200";
+        }
+
+        [HttpPost]
+        public void InsertData2([FromBody] Data data)
+        {
+            using (IoTDBdbContext context = new IoTDBdbContext())
+            {
+                var record = new TempLog()
+                {
+                    GUID = Guid.NewGuid().ToString(),
+                    Time = DateTime.Now.ToString(),
+                    TEMP = data.TEMP,
+                    HUMI = data.HUMI
+                };
+                context.TempLog.Add(record);
+                context.SaveChanges();
+            }
+        }
+
         [HttpPost]
         public void InsertData([FromBody] Data data)
         {
@@ -37,7 +71,7 @@ namespace IoTControlPanel.Controllers
             {
                 var input = new test()
                 {
-                    GUID = Guid.NewGuid(),
+                    GUID = Guid.NewGuid().ToString(),
                     TEMP = data.TEMP.ToString(),
                     HUMI = data.HUMI.ToString()
                 };
@@ -56,7 +90,8 @@ namespace IoTControlPanel.Controllers
     }
     public class Data
     {
-        public float TEMP { get; set; }
-        public float HUMI { get; set; }
+        public string TEMP { get; set; }
+        public string HUMI { get; set; }
     }
+
 }

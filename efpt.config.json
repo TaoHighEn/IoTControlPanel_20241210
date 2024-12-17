@@ -15,6 +15,14 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "TempLog",
+         "ObjectType": 0
+      },
+      {
+         "Name": "TempLog2",
+         "ObjectType": 0
+      },
+      {
          "Name": "test",
          "ObjectType": 0
       }

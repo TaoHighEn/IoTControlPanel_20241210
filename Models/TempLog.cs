@@ -5,9 +5,11 @@ using System.Collections.Generic;
 
 namespace IoTControlPanel.Models;
 
-public partial class test
+public partial class TempLog
 {
     public string GUID { get; set; }
+
+    public string Time { get; set; }
 
     public string TEMP { get; set; }
 
