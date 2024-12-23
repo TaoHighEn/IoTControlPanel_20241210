@@ -7,7 +7,7 @@ namespace IoTControlPanel.Controllers
     public class LightController : Controller
     {
         [HttpPost]
-        public ActionResult LogLightChange([FromBody] LightInfo info)
+        public void LogLightChange([FromBody] LightInfo info)
         {
             using (IoTDBdbContext context = new IoTDBdbContext())
             {
@@ -24,7 +24,6 @@ namespace IoTControlPanel.Controllers
                 };
                 context.LogLightChange.Add(logLightChange);
                 context.SaveChanges();
-                return Redirect("./Index");
             }
         }
         public ActionResult Index()
@@ -41,9 +40,12 @@ namespace IoTControlPanel.Controllers
                 {
                     result = new LogLightChange();
                 }
+                var test = data.OrderByDescending(x => x.UpdateTime).ToList();
+                ViewBag.LogLightChange = test;
                 return View(result);
             }
         }
+
     }
     public class LightInfo
     {

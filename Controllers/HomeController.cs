@@ -84,7 +84,7 @@ namespace IoTControlPanel.Controllers
         {
             using (IoTDBdbContext context = new IoTDBdbContext())
             {
-                return View(context.test.ToList());
+                return View(context.TempLog.ToList());
             }
         }
     }

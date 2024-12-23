@@ -21,9 +21,61 @@
 	}
 
 </h2>
+
+<h1>LED 控制介面</h1>
+<button onclick="sendRequest(1)">切換綠燈</button>
+<button onclick="sendRequest(2)">切換黃燈</button>
+<button onclick="sendRequest(3)">切換紅燈</button>
+
 <div>
-	<h3>選擇狀態變更列表</h3>
-	<a href="http://192.168.1.109/led?light=1">Run</a>
-	<a href="http://192.168.1.109/led?light=2">idle</a>
-	<a href="http://192.168.1.109/led?light=3">down</a>
+	@if (ViewBag.LogLightChange.Count != 0)
+	{
+		<table class="table-bordered">
+			<th>更新時間</th>
+			<th>設備IP</th>
+			<th>顯示燈號</th>
+			@foreach (var rec in ViewBag.LogLightChange as IEnumerable<LogLightChange>)
+			{
+				<tr>
+					<td>@rec.UpdateTime</td>
+					<td>@rec.SensorIP</td>
+					@if (rec.LightNum == 1)
+					{
+						<td>綠色</td>
+					}
+					else if (rec.LightNum == 2)
+					{
+						<td>黃色</td>
+					}
+					else
+					{
+						<td>紅色</td>
+					}
+				</tr>
+			}
+		</table>
+	}
 </div>
+
+@section Scripts {
+	<script>
+		function sendRequest(light) {
+
+			//const url = `http:192.168.202.158/led?light=${light}`;
+		fetch(`http://192.168.1.101/led?light=${light}`,{mode: 'cors'})
+		.then(response => {
+		  if (!response.ok) {
+			throw new Error('Network response was not ok');
+		  }
+		  location.reload();
+		  // return response.text();  將回應轉換為文本
+		})
+		.then(data => {
+		  console.log(data);  // 顯示返回的 HTML 內容
+		})
+		.catch(error => {
+		  console.error('There has been a problem with your fetch operation:', error);
+		});
+		}
+	</script>
+}

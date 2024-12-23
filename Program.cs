@@ -6,6 +6,15 @@ namespace IoTControlPanel
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // 添加 CORS 支援
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", policy =>
+                {
+                    policy.AllowAnyOrigin();
+                });
+            });
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
@@ -16,6 +25,10 @@ namespace IoTControlPanel
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            // 使用 CORS 策略
+            app.UseCors("AllowSpecificOrigin");
+
             app.UseStaticFiles();
 
             app.UseRouting();

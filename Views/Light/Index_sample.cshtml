@@ -1,0 +1,46 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@using IoTControlPanel.Models;
+@model LogLightChange;
+<h2>
+	機台當前狀態：
+	@if (Model.LightNum == 1)
+	{
+		<p>正常運作中</p>
+	}
+	else if (@Model.LightNum == 2)
+	{
+		<p>閒置</p>
+	}
+	else
+	{
+		<p>停機</p>
+	}
+
+</h2>
+
+<h1>LED 控制介面</h1>
+<button onclick="sendRequest(1)">切換綠燈</button>
+<button onclick="sendRequest(2)">切換黃燈</button>
+<button onclick="sendRequest(3)">切換紅燈</button>
+
+@section Scripts{
+    <script>
+        function sendRequest(light) {
+            const url = `http://192.168.0.193/led?light=${light}`;
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`成功控制 LED ${light}`);
+                        location.reload();
+                    } else {
+                        console.error(`控制 LED ${light} 失敗`);
+                    }
+                })
+                .catch(error => console.error('請求錯誤:', error));
+        }
+    </script>
+}

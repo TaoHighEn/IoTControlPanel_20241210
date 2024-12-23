@@ -2,8 +2,173 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @using IoTControlPanel.Models;
-@model IEnumerable<test>;
-<table class="table-bordered">
+@model IEnumerable<TempLog>;
+
+<style>
+    .weather-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: linear-gradient(to bottom, #e6f3ff, #ffffff);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin: 20px 0;
+    }
+
+    .weather-table th {
+        background: #4a90e2;
+        color: white;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .weather-table td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .weather-table tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .temp-cell {
+        color: #2ecc71;
+    }
+
+    .temp-cell.high {
+        color: #ff6b6b;
+    }
+
+    .humi-cell {
+        color: #4a90e2;
+    }
+
+    /* RWD 設計 */
+    @@media screen and (max-width: 600px) {
+        .weather-table {
+            font-size: 14px;
+        }
+
+        .weather-table th,
+        .weather-table td {
+            padding: 8px;
+        }
+
+        .weather-table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
+
+    @@keyframes warning-glow {
+        0% { text-shadow: 0 0 5px #ff6b6b; }
+        50% { text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000; }
+        100% { text-shadow: 0 0 5px #ff6b6b; }
+    }
+
+    @@keyframes warning-shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-2px); }
+        75% { transform: translateX(2px); }
+    }
+
+    .temp-cell {
+        color: #2ecc71;  /* 預設綠色 */
+        padding: 5px;
+    }
+
+    .temp-cell.high {
+        color: #ff0000;  /* 更鮮豔的紅色 */
+        font-weight: bold;
+        font-size: 1.2em;
+        animation: warning-glow 1.5s infinite, warning-shake 0.5s infinite;
+        position: relative;
+    }
+
+    .temp-cell.high::before {
+        content: "⚠️";
+        position: absolute;
+        left: -20px;
+    }
+
+    .temp-cell.high::after {
+        content: "🔥";
+        position: absolute;
+        right: -20px;
+    }
+
+    .disaster-warning {
+        display: none;
+        background: linear-gradient(45deg, #ff0000, #ff6b6b);
+        color: white;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        animation: warning-glow 2s infinite;
+    }
+
+    .pagination-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 0;
+        gap: 10px;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+
+    .pagination button {
+        padding: 8px 12px;
+        border: 1px solid #4a90e2;
+        background-color: white;
+        color: #4a90e2;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .pagination button:hover {
+        background-color: #4a90e2;
+        color: white;
+    }
+
+    .pagination button.active {
+        background-color: #4a90e2;
+        color: white;
+    }
+
+    .pagination button:disabled {
+        background-color: #f5f5f5;
+        color: #ccc;
+        border-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .page-info {
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    #pageSize {
+        padding: 5px;
+        border: 1px solid #4a90e2;
+        border-radius: 4px;
+        margin-left: 10px;
+    }
+</style>
+
+<div id="disasterWarning" class="disaster-warning">
+    ⚠️ 溫溼度歷程 ⚠️
+</div>
+
+<table class="weather-table">
     <tr>
         <th>GUID</th>
         <th>溫度</th>
@@ -13,8 +178,136 @@
     {
         <tr>
             <td>@item.GUID</td>
-            <td>@item.TEMP</td>
-            <td>@item.HUMI</td>
+            <td class="temp-cell" data-temp="@item.TEMP">@item.TEMP °C</td>
+            <td class="humi-cell">@item.HUMI %</td>
         </tr>
     }
 </table>
+
+<div class="pagination-container">
+    <div class="page-info">
+        顯示第 <span id="startRecord">0</span> 到 <span id="endRecord">0</span> 筆，共 <span id="totalRecords">0</span> 筆資料
+    </div>
+    <div class="pagination" id="pagination">
+        <button id="firstPage" title="第一頁"><<</button>
+        <button id="prevPage" title="上一頁"><</button>
+        <div id="pageButtons"></div>
+        <button id="nextPage" title="下一頁">></button>
+        <button id="lastPage" title="最後一頁">>></button>
+    </div>
+    <div>
+        <label for="pageSize">每頁顯示：</label>
+        <select id="pageSize">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+        </select>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const table = document.querySelector('.weather-table');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        let currentPage = 1;
+        let pageSize = 10;
+        let totalPages = Math.ceil(rows.length / pageSize);
+
+        // 初始化分頁系統
+        function initPagination() {
+            document.getElementById('totalRecords').textContent = rows.length;
+            updatePagination();
+            displayTableData();
+            checkTemperatures();
+        }
+
+        // 更新分頁按鈕
+        function updatePagination() {
+            const pageButtons = document.getElementById('pageButtons');
+            pageButtons.innerHTML = '';
+
+            // 計算要顯示的頁碼範圍
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            startPage = Math.max(1, endPage - 4);
+
+            // 生成頁碼按鈕
+            for (let i = startPage; i <= endPage; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.classList.toggle('active', i === currentPage);
+                button.onclick = () => goToPage(i);
+                pageButtons.appendChild(button);
+            }
+
+            // 更新導航按鈕狀態
+            document.getElementById('firstPage').disabled = currentPage === 1;
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage === totalPages;
+            document.getElementById('lastPage').disabled = currentPage === totalPages;
+        }
+
+        // 顯示表格資料
+        function displayTableData() {
+            const start = (currentPage - 1) * pageSize;
+            const end = Math.min(start + pageSize, rows.length);
+
+            // 隱藏所有行
+            rows.forEach(row => row.style.display = 'none');
+
+            // 顯示當前頁的行
+            rows.slice(start, end).forEach(row => row.style.display = '');
+
+            // 更新資訊顯示
+            document.getElementById('startRecord').textContent = rows.length ? start + 1 : 0;
+            document.getElementById('endRecord').textContent = end;
+            document.getElementById('totalRecords').textContent = rows.length;
+
+            checkTemperatures();
+        }
+
+        // 頁面導航函數
+        function goToPage(page) {
+            currentPage = page;
+            updatePagination();
+            displayTableData();
+        }
+
+        // 綁定事件處理程序
+        document.getElementById('firstPage').onclick = () => goToPage(1);
+        document.getElementById('lastPage').onclick = () => goToPage(totalPages);
+        document.getElementById('prevPage').onclick = () => goToPage(Math.max(1, currentPage - 1));
+        document.getElementById('nextPage').onclick = () => goToPage(Math.min(totalPages, currentPage + 1));
+
+        // 每頁顯示數量變更處理
+        document.getElementById('pageSize').onchange = function(e) {
+            pageSize = parseInt(e.target.value);
+            totalPages = Math.ceil(rows.length / pageSize);
+            currentPage = 1;
+            updatePagination();
+            displayTableData();
+        };
+
+        // 溫度檢查函數
+        function checkTemperatures() {
+            const tempCells = document.querySelectorAll('tr:not([style*="display: none"]) .temp-cell');
+            const warningDiv = document.getElementById('disasterWarning');
+            let hasHighTemp = false;
+
+            tempCells.forEach(cell => {
+                const temp = parseFloat(cell.getAttribute('data-temp'));
+                if (temp > 25) {
+                    cell.classList.add('high');
+                    hasHighTemp = true;
+                }
+            });
+
+            warningDiv.style.display = hasHighTemp ? 'block' : 'none';
+        }
+
+        // 初始化
+        initPagination();
+    });
+</script>
