@@ -1,0 +1,179 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+@model IEnumerable<Gift>
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聖誕禮物列表</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/snowflakes.png');
+            background-repeat: repeat;
+        }
+
+        header {
+            background-color: #ff4747;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 36px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .container {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gift-card {
+            background-color: #fff;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+            .gift-card:hover {
+                transform: scale(1.05);
+            }
+
+        .gift-header {
+            background-color: #8b0000;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .gift-body {
+            padding: 20px;
+        }
+
+            .gift-body p {
+                font-size: 18px;
+                color: #333;
+                line-height: 1.6;
+            }
+
+            .gift-body .gift-name {
+                font-size: 22px;
+                font-weight: bold;
+                color: #ff4747;
+            }
+
+        .gift-footer {
+            background-color: #ffcc00;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            border-top: 1px solid #ddd;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            font-size: 14px;
+            color: white;
+            border-radius: 25px;
+        }
+
+            .status.active {
+                background-color: #28a745;
+            }
+
+            .status.inactive {
+                background-color: #dc3545;
+            }
+
+        .gift-table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+            .gift-table th, .gift-table td {
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            .gift-table th {
+                background-color: #ff4747;
+                color: white;
+            }
+
+            .gift-table td {
+                background-color: #f9f9f9;
+            }
+
+            .gift-table tr:nth-child(even) td {
+                background-color: #f1f1f1;
+            }
+
+        footer {
+            background-color: #ff4747;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        聖誕禮物清單
+    </header>
+
+    <div class="container">
+        <h2>🎄 聖誕禮物 🎄</h2>
+        <p>查看當前的禮物清單，並了解每個禮物的狀態和相關描述！</p>
+
+        <!-- 顯示禮物清單 -->
+        <table class="gift-table">
+            <thead>
+                <tr>
+                    <th>禮物名稱</th>
+                    <th>中獎人</th>
+                    <th>狀態</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var gift in ViewBag.Data)
+                {
+                    <tr>
+                        <td class="gift-name">@gift.GiftName</td>
+                        <td>@gift.Member</td>
+                        <td>
+                            <span class="status @(gift.status == 1 ? "active" : "inactive")">
+                                @(gift.status == 1 ? "已抽出" : "未抽出")
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+    <footer>
+        祝大家聖誕快樂！🎅
+    </footer>
+
+</body>
+</html>

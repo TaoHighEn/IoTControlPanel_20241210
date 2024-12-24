@@ -15,7 +15,27 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "AlertBell",
+         "ObjectType": 0
+      },
+      {
+         "Name": "BellSetting",
+         "ObjectType": 0
+      },
+      {
+         "Name": "Gift",
+         "ObjectType": 0
+      },
+      {
          "Name": "LogLightChange",
+         "ObjectType": 0
+      },
+      {
+         "Name": "LogLightChange2",
+         "ObjectType": 0
+      },
+      {
+         "Name": "Member",
          "ObjectType": 0
       },
       {

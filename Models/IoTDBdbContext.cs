@@ -17,7 +17,17 @@ public partial class IoTDBdbContext : DbContext
     {
     }
 
+    public virtual DbSet<AlertBell> AlertBell { get; set; }
+
+    public virtual DbSet<BellSetting> BellSetting { get; set; }
+
+    public virtual DbSet<Gift> Gift { get; set; }
+
     public virtual DbSet<LogLightChange> LogLightChange { get; set; }
+
+    public virtual DbSet<LogLightChange2> LogLightChange2 { get; set; }
+
+    public virtual DbSet<Member> Member { get; set; }
 
     public virtual DbSet<TempLog> TempLog { get; set; }
 
@@ -29,6 +39,24 @@ public partial class IoTDBdbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AlertBell>(entity =>
+        {
+            entity.HasKey(e => e.GUID);
+
+            entity.Property(e => e.GUID).HasColumnType("TEXT(36)");
+            entity.Property(e => e.SensorIP).HasColumnType("TEXT(20)");
+        });
+
+        modelBuilder.Entity<BellSetting>(entity =>
+        {
+            entity.HasKey(e => e.GUID);
+        });
+
+        modelBuilder.Entity<Gift>(entity =>
+        {
+            entity.HasKey(e => e.GiftName);
+        });
+
         modelBuilder.Entity<LogLightChange>(entity =>
         {
             entity.HasKey(e => e.GUID);
@@ -36,6 +64,21 @@ public partial class IoTDBdbContext : DbContext
             entity.Property(e => e.GUID).HasColumnType("TEXT(36)");
             entity.Property(e => e.SensorIP).HasColumnType("TEXT(16)");
             entity.Property(e => e.UpdateTime).HasColumnType("TEXT(20)");
+        });
+
+        modelBuilder.Entity<LogLightChange2>(entity =>
+        {
+            entity.HasKey(e => e.GUID);
+
+            entity.Property(e => e.GUID).HasColumnType("TEXT(36)");
+            entity.Property(e => e.SensorIP).HasColumnType("TEXT(16)");
+        });
+
+        modelBuilder.Entity<Member>(entity =>
+        {
+            entity.HasKey(e => e.Name);
+
+            entity.Property(e => e.Desc).IsRequired();
         });
 
         modelBuilder.Entity<TempLog>(entity =>

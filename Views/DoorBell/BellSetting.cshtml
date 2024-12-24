@@ -1,0 +1,57 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h2>門鈴設備維護</h2>
+<form method="get" asp-action="Index" asp-controller="DoorBell">
+	<button type="submit">門鈴觸發紀錄</button>
+</form>
+
+<form method="post" asp-action="ChangeBellSetting">
+	<div class="form-group">
+		<label for="ip">輸入設備IP</label>
+		<input type="text" id="ip" name="ip" class="form-control" />
+
+		<label for="option">操作方式</label>
+		<select id="option" name="option">
+			<option value="ins">新增/啟用</option>
+			<option value="del">停用</option>
+		</select>
+	</div>
+	<button type="submit" class="btn btn-primary">送出</button>
+</form>
+
+<br/>
+@if (ViewBag.BellSetting.Count != 0)
+{
+	<table class="table-bordered">
+
+		<thead>設備IP</thead>
+
+		<thead>啟用狀態</thead>
+
+		@foreach (var data in ViewBag.BellSetting as IEnumerable<BellSetting>)
+		{
+			<tr>
+				<td>@data.SensorIP</td>
+				@if (data.Status == 0)
+				{
+					<td>停用</td>
+				}
+				else if (data.Status == 1)
+				{
+					<td>啟用</td>
+				}
+				else
+				{
+					<td>異常紀錄</td>
+				}
+			</tr>
+		}
+	</table>
+}
+else
+{
+	<div>查無資料</div>
+}
